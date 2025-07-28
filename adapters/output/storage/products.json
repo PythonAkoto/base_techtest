@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Phone",
+    "price": 1000,
+    "weight": 221
+  },
+  {
+    "name": "TV",
+    "price": 800,
+    "weight": 10000
+  },
+  {
+    "name": "Laptop",
+    "price": 5000,
+    "weight": 1400
+  },
+  {
+    "name": "Speaker",
+    "price": 200,
+    "weight": 680
+  },
+  {
+    "name": "Keyboard",
+    "price": 150,
+    "weight": 750
+  },
+  {
+    "name": "Mouse",
+    "price": 100,
+    "weight": 150
+  },
+  {
+    "name": "Headphones",
+    "price": 350,
+    "weight": 375
+  },
+  {
+    "name": "Microphone",
+    "price": 120,
+    "weight": 5
+  },
+  {
+    "name": "Tablet",
+    "price": 900,
+    "weight": 650
+  },
+  {
+    "name": "Webcam",
+    "price": 120,
+    "weight": 63
+  }
+]

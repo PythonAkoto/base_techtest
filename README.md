@@ -106,12 +106,12 @@ The example below is using UPS as the delivery service and has the price set as 
 - [ ] The prices must be calculated at request time
 - [ ] The project must follow Hexagonal Architecture
 - [ ] The numbers in the response, must all be to 2 decimal places
-- [ ] Able to switch between delivery companies by an environment variable and it logs which delivery service was used. TIP: we expect an implementation for each delivery service
-- [ ] Able to set which port the app runs on via an environment variable
-- [ ] The price can be changed from an environment variable
+- [x] Able to switch between delivery companies by an environment variable and it logs which delivery service was used. TIP: we expect an implementation for each delivery service
+- [x] Able to set which port the app runs on via an environment variable
+- [x] The price can be changed from an environment variable
 - [ ] Adequate unit testing
 - [ ] API and Mongo running in a container with Docker Compose with Mongo starting before the app on port `27017` with the port coming from a `.env` file
-- [ ] Appropriate logging/tracing, including a log which states which delivery service was used just like the `Examples` section
+- [x] Appropriate logging/tracing, including a log which states which delivery service was used just like the `Examples` section
 - [ ] Postman collection and environment provided
 - [ ] Makefile with commands to `stop` and `start` the service
 
