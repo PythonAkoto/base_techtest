@@ -15,7 +15,7 @@ func LoadProcuts() ([]domain.Product, error) {
 		return nil, os.ErrNotExist
 	}
 
-	file, err := os.Open(path)  // Open the products file
+	file, err := os.Open(path) // Open the products file
 	if err != nil {
 		return nil, err
 	}
@@ -23,10 +23,10 @@ func LoadProcuts() ([]domain.Product, error) {
 
 	var products []domain.Product
 	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&products)  // Decode the JSON data into the products slice
+	err = decoder.Decode(&products) // Decode the JSON data into the products slice
 	if err != nil {
 		return nil, err
 	}
 
-	return products, nil  // Return the loaded productsß
+	return products, nil // Return the loaded products
 }

@@ -102,10 +102,10 @@ The example below is using UPS as the delivery service and has the price set as 
 - Anything related to sending orders
 
 ## Acceptance Criteria 
-- [ ] Create an endpoint `GET` `/products` which returns the same response as the `Examples` section
-- [ ] The prices must be calculated at request time
-- [ ] The project must follow Hexagonal Architecture
-- [ ] The numbers in the response, must all be to 2 decimal places
+- [x] Create an endpoint `GET` `/products` which returns the same response as the `Examples` section
+- [x] The prices must be calculated at request time
+- [x] The project must follow Hexagonal Architecture
+- [x] The numbers in the response, must all be to 2 decimal places
 - [x] Able to switch between delivery companies by an environment variable and it logs which delivery service was used. TIP: we expect an implementation for each delivery service
 - [x] Able to set which port the app runs on via an environment variable
 - [x] The price can be changed from an environment variable

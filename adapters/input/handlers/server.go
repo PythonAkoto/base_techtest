@@ -24,6 +24,7 @@ func StartHTTPServer() {
 
 	// define roiutes and handlers
 	http.HandleFunc("/", Hello)
+	http.HandleFunc("/products", GetProductsHandler)
 
 	applicationPort := os.Getenv("APP_PORT") // get application port from environment variable
 	logs.Logs(1, fmt.Sprintf("Application port set to: %s", applicationPort))

@@ -33,13 +33,16 @@ func PriceProducts(products []Product) ([]PricedProduct, error) {
 			return nil, err
 		}
 
-		total := product.Price + deliveryPrice
+		// convert and calculate prices
+		productPrincing := roundToTwoDecimalPlaces(product.Price)
+		deliveryPricing := roundToTwoDecimalPlaces(deliveryPrice)
+		total := productPrincing + deliveryPricing
 
 		finalPrice := PricedProduct{
 			Name:            product.Name,
-			ProductPrice:    product.Price,
-			DeliveryPrice:   deliveryPrice,
-			TotalPrice:      total,
+			ProductPrice:    fmt.Sprintf("%.2f", productPrincing),
+			DeliveryPrice:   fmt.Sprintf("%.2f", deliveryPricing),
+			TotalPrice:      fmt.Sprintf("%.2f", total),
 			DeliveryService: provider,
 		}
 		result = append(result, finalPrice)
@@ -61,6 +64,22 @@ func contains(slice []string, provider string) bool {
 		}
 	}
 	return false
+}
+
+/*
+roundToTwoDecimalPlaces rounds a given float64 value to two decimal places.
+
+It multiplies the value by 100, converts it to an integer to remove any fractional part beyond two decimal places, and then divides by 100.0 to return the rounded result.
+
+Parameters:
+- value: The float64 number to be rounded.
+
+Returns:
+- A float64 number rounded to two decimal places.
+*/
+func roundToTwoDecimalPlaces(value float64) float64 {
+	// Round the value to two decimal places
+	return float64(int(value*100)) / 100.0
 }
 
 /*
