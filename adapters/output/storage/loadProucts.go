@@ -8,7 +8,11 @@ import (
 	"github.com/PythonAkoto/base_techtest/domain"
 )
 
-func LoadProcuts() ([]domain.Product, error) {
+var (
+	LoadProductsFunc = LoadProducts // Function to load products, can be mocked in tests
+)
+
+func LoadProducts() ([]domain.Product, error) {
 	path := os.Getenv("PRODUCTS_FILE_PATH") // Get the path to the products file from environment variable
 	if path == "" {
 		logs.Logs(3, "PRODUCTS_FILE_PATH environment variable not set", "")

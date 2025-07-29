@@ -8,6 +8,10 @@ import (
 	"github.com/PythonAkoto/base_techtest/adapters/output/logs"
 )
 
+var (
+	PriceProductsFunc = PriceProducts // Function to price products, can be mocked in tests
+)
+
 /*
 PriceProducts calculates the delivery price and total price for a list of products
 based on their weight and the delivery provider specified in the environment.

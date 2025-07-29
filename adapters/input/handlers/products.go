@@ -20,7 +20,7 @@ func GetProductsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// load products from storage
-	products, err := storage.LoadProcuts()
+	products, err := storage.LoadProductsFunc()
 	if err != nil {
 		logs.Logs(3, "Failed to load products: "+err.Error(), provider)
 		http.Error(w, "Failed to load products", http.StatusInternalServerError)
@@ -28,7 +28,7 @@ func GetProductsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// calculate prices for products
-	productPrices, err := domain.PriceProducts(products)
+	productPrices, err := domain.PriceProductsFunc(products)
 	if err != nil {
 		logs.Logs(3, "Failed to price products: "+err.Error(), provider)
 		http.Error(w, "Failed to price products", http.StatusInternalServerError)
