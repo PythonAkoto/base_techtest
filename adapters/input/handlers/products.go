@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/PythonAkoto/base_techtest/adapters/output/logs"
 	"github.com/PythonAkoto/base_techtest/adapters/output/storage"
@@ -11,12 +12,27 @@ import (
 )
 
 func GetProductsHandler(w http.ResponseWriter, r *http.Request) {
-	// get delivery provider from environment variable
-	provider := os.Getenv("DELIVERY_PROVIDER")
-	if provider == "" {
-		logs.Logs(3, "DELIVERY_PROVIDER environment variable not set", provider)
+	// get the default provider from environment variable
+	defaultProvider := strings.ToUpper(os.Getenv("DELIVERY_PROVIDER"))
+	if defaultProvider == "" {
+		logs.Logs(3, "DELIVERY_PROVIDER environment variable not set", "")
 		http.Error(w, "Delivery provider not set", http.StatusInternalServerError)
 		return
+	}
+
+	// check for provider query parameter
+	queryProvider := strings.ToUpper(r.URL.Query().Get("provider"))
+	var provider string
+
+	if queryProvider == "" {
+		// use default from env
+		provider = defaultProvider
+		logs.Logs(1, "No provider specified in URL, using default from environment", provider)
+	} else {
+		provider = queryProvider
+		if provider != defaultProvider {
+			logs.Logs(2, "Query provider differs from env provider", provider)
+		}
 	}
 
 	// load products from storage
@@ -28,7 +44,7 @@ func GetProductsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// calculate prices for products
-	productPrices, err := domain.PriceProductsFunc(products)
+	productPrices, err := domain.PriceProductsFunc(products, provider)
 	if err != nil {
 		logs.Logs(3, "Failed to price products: "+err.Error(), provider)
 		http.Error(w, "Failed to price products", http.StatusInternalServerError)

@@ -18,10 +18,10 @@ based on their weight and the delivery provider specified in the environment.
 It returns a slice of PricedProduct containing the pricing details for each product,
 or an error if the delivery provider is not set in the environment variables.
 */
-func PriceProducts(products []Product) ([]PricedProduct, error) {
-	provider := os.Getenv("DELIVERY_PROVIDER")
+func PriceProducts(products []Product, provider string) ([]PricedProduct, error) {
+	// provider := os.Getenv("DELIVERY_PROVIDER")
 	// Check if the delivery provider is set in the environment variables
-	allowedProviders := []string{"DHL", "UPS", "AMAZON", "ROYAL_MAIL", "DPD", "YODEL"}
+	allowedProviders := []string{"DHL", "UPS", "AMAZON", "ROYALMAIL", "DPD", "YODEL"}
 	if !contains(allowedProviders, provider) {
 		// Log an error if the delivery provider is not set
 		logs.Logs(3, "DELIVERY_PROVIDER environment variable not set", provider)
