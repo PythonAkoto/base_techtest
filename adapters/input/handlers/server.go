@@ -10,12 +10,12 @@ import (
 )
 
 func StartHTTPServer() {
-	logs.Logs(1, "Starting HTTP server...")
-	logs.Logs(1, "Loading environment variables...")
+	logs.Logs(1, "Starting HTTP server...", "")
+	logs.Logs(1, "Loading environment variables...", "")
 	// Load environment variables
 	err := env.LoadEnv("env/.env")
 	if err != nil {
-		logs.Logs(3, fmt.Sprintf("failed to load environment variables: %s", err.Error()))
+		logs.Logs(3, fmt.Sprintf("failed to load environment variables: %s", err.Error()), "")
 	}
 
 	// initialise HTTP templates
@@ -24,25 +24,26 @@ func StartHTTPServer() {
 
 	// define roiutes and handlers
 	http.HandleFunc("/", Hello)
+	http.HandleFunc("/products", GetProductsHandler)
 
 	applicationPort := os.Getenv("APP_PORT") // get application port from environment variable
-	logs.Logs(1, fmt.Sprintf("Application port set to: %s", applicationPort))
+	logs.Logs(1, fmt.Sprintf("Application port set to: %s", applicationPort), "")
 
 	// if application port missing from env, default to 9000
 	if applicationPort == "" {
-		logs.Logs(2, "APP_PORT environment variable not set, defaulting to port 8080")
+		logs.Logs(2, "APP_PORT environment variable not set, defaulting to port 8080", "")
 		applicationPort = "9000" // this can be changed to any default port
 
 		err := http.ListenAndServe(fmt.Sprintf(":%s", applicationPort), nil)
 		if err != nil {
-			logs.Logs(3, fmt.Sprintf("failed to start HTTP server: %s", err.Error()))
+			logs.Logs(3, fmt.Sprintf("failed to start HTTP server: %s", err.Error()), "")
 		}
 	}
 
 	// start HTTP server via environment variable
-	logs.Logs(1, "application started successfully on http://localhost:"+applicationPort)
+	logs.Logs(1, "application started successfully on http://localhost:"+applicationPort, "")
 	err = http.ListenAndServe(fmt.Sprintf(":%s", applicationPort), nil)
 	if err != nil {
-		logs.Logs(3, fmt.Sprintf("failed to start HTTP server: %s", err.Error()))
+		logs.Logs(3, fmt.Sprintf("failed to start HTTP server: %s", err.Error()), "")
 	}
 }
