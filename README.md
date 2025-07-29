@@ -110,10 +110,10 @@ The example below is using UPS as the delivery service and has the price set as 
 - [x] Able to set which port the app runs on via an environment variable
 - [x] The price can be changed from an environment variable
 - [x] Adequate unit testing
-- [ ] API and Mongo running in a container with Docker Compose with Mongo starting before the app on port `27017` with the port coming from a `.env` file
+- [x] API and Mongo running in a container with Docker Compose with Mongo starting before the app on port `27017` with the port coming from a `.env` file
 - [x] Appropriate logging/tracing, including a log which states which delivery service was used just like the `Examples` section
 - [ ] Postman collection and environment provided
-- [ ] Makefile with commands to `stop` and `start` the service
+- [x] Makefile with commands to `stop` and `start` the service
 
 ---
 
@@ -271,28 +271,199 @@ DELIVERY_PROVIDER=UPS
 - **Regression Prevention**: Comprehensive scenarios prevent future bugs
 - **Documentation**: Tests serve as usage examples
 
-### Step 10: Build and Run
+### Step 10: Docker Containerization
+Create containerized deployment with Docker Compose and MongoDB integration.
+
+#### 10.1: Create Dockerfile
+**File: `Dockerfile`**
+```dockerfile
+# Use official Golang image that matches go.mod version
+FROM golang:1.23-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy go mod files and download dependencies
+COPY go.mod ./
+COPY go.sum* ./
+RUN go mod download
+
+# Copy rest of the source code
+COPY . .
+
+# Build the Go app
+RUN go build -o main .
+
+# Expose the port
+EXPOSE 8080
+
+# Start the app
+CMD ["./main"]
+```
+
+**Advantages of this Dockerfile approach:**
+- **Multi-stage potential**: Foundation for optimized production builds
+- **Dependency caching**: Separate layer for go.mod reduces rebuild time
+- **Alpine base**: Smaller image size and security benefits
+- **Version matching**: Go version matches go.mod requirements
+- **Graceful go.sum handling**: Works with or without go.sum file
+
+#### 10.2: Create Docker Compose Configuration
+**File: `docker-compose.yml`**
+```yaml
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "${MONGO_PORT}:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    networks:
+      - backend
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: base-techtest-api
+    depends_on:
+      - mongo
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    env_file:
+      - .env
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+```
+
+**Advantages of this Docker Compose setup:**
+- **Service orchestration**: Manages multiple containers as a single application
+- **Dependency management**: App waits for MongoDB to start with `depends_on`
+- **Environment isolation**: Custom network prevents external interference
+- **Configuration flexibility**: Environment variables from `.env` file
+- **Port management**: Dynamic port mapping from environment variables
+- **Database persistence**: MongoDB data persists between container restarts
+
+#### 10.3: Create Makefile for Container Management
+**File: `Makefile`**
+```makefile
+.PHONY: start stop restart logs
+
+# Start the containers in detached mode
+start:
+	docker-compose up -d
+
+# Stop the containers
+stop:
+	docker-compose down
+
+# Restart the containers
+restart:
+	docker-compose down && docker-compose up -d
+
+# View logs
+logs:
+	docker-compose logs -f
+```
+
+**Advantages of Makefile automation:**
+- **Simplified commands**: Easy-to-remember commands for complex operations
+- **Consistent deployment**: Same commands work across different environments
+- **Developer productivity**: Reduces typing and potential errors
+- **Documentation**: Commands serve as deployment documentation
+- **CI/CD ready**: Can be easily integrated into automated pipelines
+
+#### 10.4: Update Environment Configuration
+Add MongoDB configuration to your `.env` file:
+```env
+# Application Configuration
+APP_PORT=8080
+PRODUCTS_FILE_PATH=adapters/output/storage/products.json
+
+# MongoDB Configuration
+MONGO_PORT=27017
+
+# Delivery Provider Pricing (price per unit weight)
+DHL_DELIVERY_PRICE=0.03
+UPS_DELIVERY_PRICE=0.01
+AMAZON_DELIVERY_PRICE=0.08
+ROYAL_MAIL_DELIVERY_PRICE=0.09
+DPD_DELIVERY_PRICE=0.11
+YODEL_DELIVERY_PRICE=0.07
+
+# Default Delivery Provider
+DELIVERY_PROVIDER=AMAZON
+```
+
+**Container deployment advantages:**
+- **Environment consistency**: Same runtime environment across development, testing, and production
+- **Dependency isolation**: No conflicts with host system dependencies
+- **Scalability**: Easy to scale individual services
+- **Development efficiency**: Quick setup for new team members
+- **Production readiness**: Container-first approach aligns with modern deployment practices
+
+### Step 11: Build and Run (Containerized)
 ```bash
-# Install dependencies
+# Install dependencies and generate go.sum
 go mod tidy
 
 # Run tests
 go test ./...
 
-# Run the application
+# Start containers (includes MongoDB)
+make start
+
+# View logs (optional)
+make logs
+
+# Stop containers when done
+make stop
+```
+
+**Alternative: Local Development**
+```bash
+# For local development without containers
 go run main.go
 ```
 
-### Step 11: Test the API
+### Step 12: Test the API
 ```bash
 # Test with default provider (from environment)
-curl http://localhost:9000/products
+curl http://localhost:8080/products
 
 # Test with query parameter override
-curl "http://localhost:9000/products?provider=DHL"
+curl "http://localhost:8080/products?provider=dhl"
 
 # Test case insensitive
-curl "http://localhost:9000/products?provider=ups"
+curl "http://localhost:8080/products?provider=ups"
+
+# Test different providers
+curl "http://localhost:8080/products?provider=amazon"
+curl "http://localhost:8080/products?provider=royalmail"
+```
+
+**Container Management Commands:**
+```bash
+# Start all services
+make start
+
+# View real-time logs
+make logs
+
+# Restart services
+make restart
+
+# Stop all services
+make stop
+
+# Check container status
+docker-compose ps
 ```
 
 ---
@@ -410,3 +581,21 @@ type DeliveryError struct {
 
 These refactoring opportunities would transform the project into a more enterprise-ready application while maintaining the solid architectural foundation already established.
 
+
+### REFRERENCES
+- [Hexagonal Architecture](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software))
+- [Hexagonal Architecture in Go](https://dev.to/bagashiz/building-restful-api-with-hexagonal-architecture-in-go-1mij)
+- [Factory Pattern](https://refactoring.guru/design-patterns/factory-method)
+- [Factory Pattern in Go](https://refactoring.guru/design-patterns/factory-method/go/example)
+- [Interface-Based Design](https://tillitsdone.com/blogs/go-interfaces--design-and-implementation/)
+- [Dependency Injection in Go](https://blog.matthiasbruns.com/golang-the-ultimate-guide-to-dependency-injection)
+- [Strategy Pattern](https://refactoring.guru/design-patterns/strategy)
+- [Strategy Pattern in Go](https://refactoring.guru/design-patterns/strategy/go/examplefactory)
+- [Caching in Go](https://dev.to/siddheshk02/caching-in-golang-176j)
+- [Caching YouTube](https://www.youtube.com/watch?v=7B5mXWYiQZE&t=7s)
+- [Structured Logging](https://go.dev/blog/slog)
+- [Error Logging](https://go.dev/blog/error-handling-and-go)
+- [Validation Layer](https://dev.to/ansu/best-practices-for-building-a-validation-layer-in-go-59j9)
+- [Database Abstraction](https://johnjianwang.medium.com/database-abstractions-for-golang-ae252911de6f)
+- [Middleware Patterns](https://drstearns.github.io/tutorials/gomiddleware/)
+- [Configuration Management](https://medium.com/checker-engineering/simple-configuration-management-in-go-c4fe5db2f82e)
