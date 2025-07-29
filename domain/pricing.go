@@ -20,7 +20,7 @@ func PriceProducts(products []Product) ([]PricedProduct, error) {
 	allowedProviders := []string{"DHL", "UPS", "AMAZON", "ROYAL_MAIL", "DPD", "YODEL"}
 	if !contains(allowedProviders, provider) {
 		// Log an error if the delivery provider is not set
-		logs.Logs(3, "DELIVERY_PROVIDER environment variable not set")
+		logs.Logs(3, "DELIVERY_PROVIDER environment variable not set", provider)
 		return nil, fmt.Errorf("delivery provider not set")
 	}
 
@@ -29,7 +29,7 @@ func PriceProducts(products []Product) ([]PricedProduct, error) {
 	for _, product := range products {
 		deliveryPrice, err := calculateDeliveryPrice(product.Weight, provider)
 		if err != nil {
-			logs.Logs(3, fmt.Sprintf("failed to calculate delivery price for product %s: %s", product.Name, err.Error()))
+			logs.Logs(3, fmt.Sprintf("failed to calculate delivery price for product %s: %s", product.Name, err.Error()), provider)
 			return nil, err
 		}
 
@@ -46,7 +46,7 @@ func PriceProducts(products []Product) ([]PricedProduct, error) {
 			DeliveryService: provider,
 		}
 		result = append(result, finalPrice)
-		logs.Logs(1, "Product priced successfully: "+product.Name+" with total price: "+fmt.Sprintf("%.2f", total))
+		logs.Logs(1, "Product priced successfully: "+product.Name+" with total price: "+fmt.Sprintf("%.2f", total), provider)
 	}
 
 	return result, nil
