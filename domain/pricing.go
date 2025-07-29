@@ -124,7 +124,7 @@ func calculateDeliveryPrice(weight float64, provider string) (float64, error) {
 		}
 		return weight * AMAZON_DELIVERY_PRICE, nil
 
-	case "ROYAL_MAIL":
+	case "ROYALMAIL":
 		ROYAL_MAIL_DELIVERY_PRICE, err := strconv.ParseFloat(os.Getenv("ROYAL_MAIL_DELIVERY_PRICE"), 64)
 		if err != nil {
 			if err == strconv.ErrSyntax {
