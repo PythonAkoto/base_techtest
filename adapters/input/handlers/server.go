@@ -27,20 +27,16 @@ func StartHTTPServer() {
 	http.HandleFunc("/products", GetProductsHandler)
 
 	applicationPort := os.Getenv("APP_PORT") // get application port from environment variable
-	logs.Logs(1, fmt.Sprintf("Application port set to: %s", applicationPort), "")
-
-	// if application port missing from env, default to 9000
+	
+	// if application port missing from env, default to 8080
 	if applicationPort == "" {
 		logs.Logs(2, "APP_PORT environment variable not set, defaulting to port 8080", "")
-		applicationPort = "9000" // this can be changed to any default port
-
-		err := http.ListenAndServe(fmt.Sprintf(":%s", applicationPort), nil)
-		if err != nil {
-			logs.Logs(3, fmt.Sprintf("failed to start HTTP server: %s", err.Error()), "")
-		}
+		applicationPort = "8080" // default port
 	}
+	
+	logs.Logs(1, fmt.Sprintf("Application port set to: %s", applicationPort), "")
 
-	// start HTTP server via environment variable
+	// start HTTP server
 	logs.Logs(1, "application started successfully on http://localhost:"+applicationPort, "")
 	err = http.ListenAndServe(fmt.Sprintf(":%s", applicationPort), nil)
 	if err != nil {

@@ -8,5 +8,5 @@ import (
 func Hello(w http.ResponseWriter, r *http.Request) {
 
 	// Respond with a simple message
-	fmt.Fprintln(w, "Hello, World!")
+	fmt.Fprintln(w, "Hello Base!")
 }
